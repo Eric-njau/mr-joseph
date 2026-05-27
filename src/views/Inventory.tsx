@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
-import { INVENTORY, Car } from '../data';
+import { useInventory, Car } from '../data';
 import CarCard from '../components/CarCard';
 import { SlidersHorizontal, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 
-export default function Inventory({ setView, setSelectedCar }: { setView: (v: string) => void, setSelectedCar: (id: number) => void }) {
-  const [filter, setFilter] = useState('All');
+export default function Inventory({ setView, setSelectedCar, initialFilter = 'All' }: { setView: (v: string) => void, setSelectedCar: (id: number | string) => void, initialFilter?: string }) {
+  const INVENTORY = useInventory();
+  const [filter, setFilter] = useState(initialFilter);
   const [sort, setSort] = useState('newest');
+
+  useEffect(() => {
+    setFilter(initialFilter);
+  }, [initialFilter]);
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -17,9 +22,9 @@ export default function Inventory({ setView, setSelectedCar }: { setView: (v: st
     return () => ctx.revert();
   }, []);
 
-  const types = ['All', 'Sedan', 'SUV', 'Coupe', 'GT'];
+  const types = ['All', 'Kenya', 'Incoming', 'Sedan', 'SUV', 'Coupe', 'GT'];
 
-  let filteredCars = INVENTORY.filter(c => filter === 'All' || c.type === filter);
+  let filteredCars = INVENTORY.filter(c => filter === 'All' || c.type === filter || (c.status === filter));
   
   // Sorting logic
   if (sort === 'price-low') filteredCars.sort((a, b) => a.price - b.price);

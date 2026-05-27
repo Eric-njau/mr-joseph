@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'gvoiAzFiyFa3dn54CXtyR73za4h1';
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    function isValidCar(data) {
+      return data.keys().hasAll(['make', 'model', 'image', 'createdAt']) &&
+        data.make is string && data.make.size() <= 100 &&
+        data.model is string && data.model.size() <= 100 &&
+        data.image is string && data.image.size() <= 1000000 &&
+        (!('year' in data) || data.year is number) &&
+        (!('price' in data) || data.price is number) &&
+        (!('spec' in data) || (data.spec is string && data.spec.size() <= 10000)) &&
+        (!('features' in data) || (data.features is list && data.features.size() <= 50 && (data.features.size() == 0 || data.features[0] is string))) &&
+        (!('location' in data) || (data.location is string && data.location.size() <= 200)) &&
+        (!('videoUrl' in data) || (data.videoUrl is string && data.videoUrl.size() <= 1000));
+    }
+
+    match /cars/{carId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidId(carId) && isValidCar(incoming()) && incoming().createdAt == request.time;
+      allow update: if isAdmin() && isValidId(carId) && isValidCar(incoming()) && incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin() && isValidId(carId);
+    }
+  }
+}

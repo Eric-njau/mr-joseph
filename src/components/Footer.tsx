@@ -6,9 +6,20 @@ export default function Footer({ setView }: { setView: (v: string) => void }) {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-[var(--color-base)]/10 pb-12">
         {/* Brand */}
         <div className="md:col-span-1 space-y-6">
-          <h2 className="font-serif text-3xl font-semibold tracking-wide">
-            Mr Joseph.
-          </h2>
+          <div className="flex flex-col items-start mb-2 text-white">
+            <span
+              style={{
+                fontFamily: "'Alex Brush', cursive",
+                transform: "rotate(-2deg)",
+              }}
+              className="text-5xl leading-none inline-block pb-1 pr-2"
+            >
+              Mr Joseph
+            </span>
+            <span className="font-sans text-[11px] font-light tracking-[0.2em] uppercase text-white/95 mt-[-4px]">
+              Elite Personal Agent
+            </span>
+          </div>
           <p className="text-sm font-medium text-[var(--color-base)]/60 leading-relaxed max-w-sm">
             Prestige vehicles. A highly curated selection of the world's most
             luxurious vehicles, tailored for the discerning few.
@@ -113,8 +124,7 @@ export default function Footer({ setView }: { setView: (v: string) => void }) {
           <span>Concierge Active</span>
         </div>
         <p className="mt-4 md:mt-0">
-          &copy; {new Date().getFullYear()} Mr Joseph Premium Cars. All rights
-          reserved.
+          &copy; {new Date().getFullYear()} Mr Joseph. All rights reserved.
         </p>
         <div className="flex gap-6 mt-4 md:mt-0">
           <a

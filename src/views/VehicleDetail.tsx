@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { INVENTORY } from '../data';
-import { ArrowLeft, Check, Gauge, Calendar, ShieldCheck } from 'lucide-react';
+import { useInventory } from '../data';
+import { ArrowLeft, Check, Gauge, Calendar, ShieldCheck, MapPin } from 'lucide-react';
 import gsap from 'gsap';
 
-export default function VehicleDetail({ id, setView }: { id: number, setView: (v: string) => void }) {
+export default function VehicleDetail({ id, setView }: { id: number | string, setView: (v: string) => void }) {
+  const INVENTORY = useInventory();
   const car = INVENTORY.find(c => c.id === id);
 
   useEffect(() => {
@@ -30,28 +31,40 @@ export default function VehicleDetail({ id, setView }: { id: number, setView: (v
         {/* Gallery */}
         <div className="vd-img">
           <div className="aspect-[4/3] bg-[var(--color-chrome)] border border-[var(--color-base)]/10">
-             <img src={car.images[0]} alt={car.model} className="w-full h-full object-cover" />
+             <img src={car.images?.[0] || car.image} alt={car.model} className="w-full h-full object-cover" />
           </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-             {car.images.slice(1, 4).map((img, i) => (
-               <div key={i} className="aspect-video bg-[var(--color-chrome)] opacity-60 hover:opacity-100 transition-opacity cursor-pointer border border-[var(--color-base)]/10">
-                 <img src={img} alt={car.model} className="w-full h-full object-cover" />
-               </div>
-             ))}
-          </div>
+          {car.images && car.images.length > 1 && (
+            <div className="grid grid-cols-3 gap-4 mt-4">
+               {car.images.slice(1, 4).map((img, i) => (
+                 <div key={i} className="aspect-video bg-[var(--color-chrome)] opacity-60 hover:opacity-100 transition-opacity cursor-pointer border border-[var(--color-base)]/10">
+                   <img src={img} alt={car.model} className="w-full h-full object-cover" />
+                 </div>
+               ))}
+            </div>
+          )}
         </div>
 
         {/* Info */}
         <div className="flex flex-col justify-center">
-          <p className="vd-text font-mono text-xs text-[var(--color-slate)]/60 uppercase tracking-widest mb-4">Stock #MJ-{car.id}00</p>
+          <p className="vd-text font-mono text-xs text-[var(--color-slate)]/60 uppercase tracking-widest mb-4">Stock #MJ-{car.id.toString().substring(0,6)}</p>
           <h1 className="vd-text font-serif text-4xl md:text-5xl lg:text-6xl text-[var(--color-base)] italic font-light mb-2">
             {car.year} {car.make}
           </h1>
-          <h2 className="vd-text font-sans text-2xl md:text-3xl text-[var(--color-slate)] font-light mb-8">{car.model}</h2>
+          <h2 className="vd-text font-sans text-2xl md:text-3xl text-[var(--color-slate)] font-light mb-4">{car.model}</h2>
           
+          {car.spec && (
+             <p className="vd-text text-[var(--color-champagne)] font-medium text-lg mb-4">{car.spec}</p>
+          )}
+
           <div className="vd-text flex items-end gap-6 mb-12">
-            <p className="text-4xl text-[var(--color-champagne)] font-serif italic">Ksh {car.price.toLocaleString()}</p>
-            <p className="text-lg text-[var(--color-slate)] font-medium mb-1 line-through">Ksh {(car.price * 1.05).toLocaleString()}</p>
+            {car.price ? (
+              <>
+                <p className="text-4xl text-[var(--color-champagne)] font-serif italic">Ksh {car.price.toLocaleString()}</p>
+                <p className="text-lg text-[var(--color-slate)] font-medium mb-1 line-through">Ksh {(car.price * 1.05).toLocaleString()}</p>
+              </>
+            ) : (
+                <p className="text-4xl text-[var(--color-champagne)] font-serif italic">POA</p>
+            )}
           </div>
 
           <div className="vd-text grid grid-cols-3 gap-6 mb-12 border-y border-[var(--color-base)]/10 py-8">
@@ -60,15 +73,25 @@ export default function VehicleDetail({ id, setView }: { id: number, setView: (v
                <p className="font-mono text-xs text-[var(--color-slate)]/60 uppercase tracking-widest mb-1">Year</p>
                <p className="font-medium text-[var(--color-base)]">{car.year}</p>
             </div>
-            <div className="flex flex-col items-center justify-center text-center border-l border-r border-[var(--color-base)]/10">
+            <div className="flex flex-col items-center justify-center text-center border-l border-r border-[var(--color-base)]/10 px-2">
                <Gauge className="text-[var(--color-champagne)] mb-3" size={24} />
                <p className="font-mono text-xs text-[var(--color-slate)]/60 uppercase tracking-widest mb-1">Mileage</p>
-               <p className="font-medium text-[var(--color-base)]">{car.mileage.toLocaleString()}</p>
+               <p className="font-medium text-[var(--color-base)]">{car.mileage ? car.mileage.toLocaleString() : 'N/A'}</p>
             </div>
-            <div className="flex flex-col items-center justify-center text-center">
-               <ShieldCheck className="text-[var(--color-champagne)] mb-3" size={24} />
-               <p className="font-mono text-xs text-[var(--color-slate)]/60 uppercase tracking-widest mb-1">Condition</p>
-               <p className="font-medium text-[var(--color-base)]">Pristine</p>
+            <div className="flex flex-col items-center justify-center text-center px-2">
+               {car.location ? (
+                 <>
+                   <MapPin className="text-[var(--color-champagne)] mb-3" size={24} />
+                   <p className="font-mono text-xs text-[var(--color-slate)]/60 uppercase tracking-widest mb-1">Location</p>
+                   <p className="font-medium text-[var(--color-base)]">{car.location}</p>
+                 </>
+               ) : (
+                 <>
+                   <ShieldCheck className="text-[var(--color-champagne)] mb-3" size={24} />
+                   <p className="font-mono text-xs text-[var(--color-slate)]/60 uppercase tracking-widest mb-1">Condition</p>
+                   <p className="font-medium text-[var(--color-base)]">Pristine</p>
+                 </>
+               )}
             </div>
           </div>
 

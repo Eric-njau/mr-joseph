@@ -1,0 +1,28 @@
+{
+  "entities": {
+    "car": {
+      "title": "Car",
+      "description": "Premium car inventory",
+      "type": "object",
+      "properties": {
+        "make": { "type": "string" },
+        "model": { "type": "string" },
+        "year": { "type": "number" },
+        "price": { "type": "number" },
+        "spec": { "type": "string" },
+        "features": { "type": "array", "items": { "type": "string" } },
+        "location": { "type": "string" },
+        "image": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["make", "model", "image", "createdAt"]
+    }
+  },
+  "firestore": {
+    "cars/{carId}": {
+      "schema": "car",
+      "description": "Collection of all premium cars"
+    }
+  }
+}

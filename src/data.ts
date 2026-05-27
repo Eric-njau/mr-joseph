@@ -1,17 +1,27 @@
+import { useState, useEffect } from 'react';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { db } from './firebase';
+
 export type Car = {
-  id: number;
+  id: number | string;
   make: string;
   model: string;
   year: number;
   price: number;
-  mileage: number;
-  images: string[];
-  type: string;
+  mileage?: number;
+  images?: string[];
+  image?: string;
+  type?: string;
   features: string[];
-  description: string;
+  description?: string;
+  spec?: string;
+  location?: string;
+  videoUrl?: string;
+  status?: 'Kenya' | 'Incoming' | 'International';
 };
 
 export const INVENTORY: Car[] = [
+
   {
     id: 9,
     make: "Porsche",
@@ -33,6 +43,7 @@ export const INVENTORY: Car[] = [
     ],
     type: "SUV",
     features: ["Sport Chrono Package", "Sport Exhaust System", "Air Suspension", "Porsche Dynamic Light System"],
+    status: 'Kenya',
     description: "HOT NEW ARRIVAL. A true performance SUV delivering power, precision, and an unmistakable driving experience."
   },
   {
@@ -56,6 +67,7 @@ export const INVENTORY: Car[] = [
     ],
     type: "SUV",
     features: ["Meridian Signature Sound", "Executive Class Rear Seats", "Shadow Exterior Pack", "Head-Up Display"],
+    status: 'Kenya',
     description: "Experience luxury comfort and commanding performance in this immaculate Range Rover Vogue. An absolute icon of prestige."
   },
   {
@@ -78,6 +90,7 @@ export const INVENTORY: Car[] = [
     ],
     type: "SUV",
     features: ["Fox Racing Suspension", "Baja Drive Mode", "Alcantara Sports Seats", "Underbody Protection"],
+    status: 'Kenya',
     description: "A commanding presence. Built to dominate every terrain while ensuring the utmost cabin comfort."
   },
   {
@@ -100,6 +113,7 @@ export const INVENTORY: Car[] = [
     ],
     type: "SUV",
     features: ["Pilot Assist", "Bowers & Wilkins Audio", "Orrefors Crystal Shifter", "Panoramic Roof"],
+    status: 'Kenya',
     description: "Luxury, performance, and unmatched Scandinavian engineering. The perfect balanced premium SUV."
   },
   {
@@ -123,6 +137,7 @@ export const INVENTORY: Car[] = [
     ],
     type: "SUV",
     features: ["AMG Night Package", "Carbon Fiber Trim", "Burmester Surround Sound", "Exclusive Nappa Leather"],
+    status: 'Incoming',
     description: "Pure presence, pure power. The ultimate luxury off-roader that commands absolute respect on the road."
   },
   {
@@ -144,6 +159,7 @@ export const INVENTORY: Car[] = [
     ],
     type: "Sedan",
     features: ["AMG Line", "Burmester Surround Sound", "Exclusive Nappa Leather", "Active Ambient Lighting"],
+    status: 'Incoming',
     description: "Flagship Luxury. Intelligent Power. Absolute Presence. The unparalleled Mercedes-Benz S500."
   },
   {
@@ -167,6 +183,7 @@ export const INVENTORY: Car[] = [
     ],
     type: "SUV",
     features: ["M Sport Package", "Twin Power Turbo Diesel", "Panoramic Sunroof", "Harman Kardon Audio"],
+    status: 'Incoming',
     description: "The BMW X6 xDrive35d M Sport combines powerful 3000cc Twin Power Turbo Diesel performance with striking coupe-like styling in an elegant Manhattan finish."
   },
   {
@@ -189,6 +206,7 @@ export const INVENTORY: Car[] = [
     ],
     type: "SUV",
     features: ["EQ Boost", "Executive Performance", "4MATIC All-Wheel Drive", "Premium Interior"],
+    status: 'Incoming',
     description: "EXECUTIVE PERFORMANCE SUV. The 2019 Mercedes-Benz GLE 450 4MATIC with EQ Boost offers refined power, commanding road presence, and unparalleled interior luxury. Deal of the week."
   },
   {
@@ -212,6 +230,28 @@ export const INVENTORY: Car[] = [
     ],
     type: "SUV",
     features: ["VIP Rear Lounge Seating", "Mark Levinson Reference Audio", "Dual Rear Seat Entertainment", "Adaptive Variable Suspension"],
+    status: 'Incoming',
     description: "THE SUMMIT OF SOPHISTICATION. Every detail of this Graphite Black Lexus LX600 Ultra Luxury is crafted for unprecedented comfort and commanding exclusivity."
   }
 ];
+
+export function useInventory() {
+  const [cars, setCars] = useState<Car[]>(INVENTORY);
+
+  useEffect(() => {
+    const q = query(collection(db, 'cars'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const firebaseCars = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Car[];
+      setCars([...firebaseCars, ...INVENTORY]); // Firebase cars appear first
+    }, (error) => {
+      console.error("Firestore error:", error);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return cars;
+}

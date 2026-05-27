@@ -22,31 +22,42 @@ export default function Navbar({
   const navItems = [
     { label: "Home", value: "home" },
     { label: "Inventory", value: "inventory" },
+    { label: "Cars in Kenya", value: "inventory-kenya" },
+    { label: "Incoming Cars", value: "inventory-incoming" },
     { label: "Financing", value: "financing" },
     { label: "Concierge", value: "contact" },
   ];
 
   return (
     <header
-      className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        scrolled ? "py-4" : "py-8"
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
+        scrolled ? "py-2" : "py-6"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="w-full px-4 md:px-8">
         <div
-          className={`flex items-center justify-between transition-all duration-500 px-6 py-4 ${
+          className={`flex items-center justify-between transition-all duration-500 px-4 py-3 rounded-2xl ${
             scrolled || currentView !== "home"
-              ? "bg-[var(--color-obsidian)]/90 backdrop-blur-xl border-b border-[var(--color-base)]/10 shadow-2xl"
+              ? "bg-[var(--color-obsidian)]/90 backdrop-blur-xl border border-[var(--color-base)]/10 shadow-2xl"
               : "bg-transparent border-transparent"
           }`}
         >
           {/* Logo */}
           <button
             onClick={() => setView("home")}
-            className="flex flex-col items-start transition-colors text-[var(--color-base)] text-left"
+            className="flex flex-col items-center justify-center transition-colors text-white"
           >
-            <span className="font-serif text-lg sm:text-xl md:text-2xl italic tracking-tight leading-tight">
-              Mr Joseph Premium Cars
+            <span
+              style={{
+                fontFamily: "'Alex Brush', cursive",
+                transform: "rotate(-2deg)",
+              }}
+              className="text-5xl sm:text-6xl leading-none inline-block pb-1 pr-2"
+            >
+              Mr Joseph
+            </span>
+            <span className="font-sans text-[11px] sm:text-[13px] font-light tracking-[0.2em] uppercase text-white/95 mt-[-4px]">
+              Elite Personal Agent
             </span>
           </button>
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { INVENTORY } from "../data";
+import { useInventory } from "../data";
 import CarCard from "../components/CarCard";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -11,9 +11,10 @@ export default function Home({
   setSelectedCar,
 }: {
   setView: (v: string) => void;
-  setSelectedCar: (id: number) => void;
+  setSelectedCar: (id: number | string) => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
+  const INVENTORY = useInventory();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -90,8 +91,8 @@ export default function Home({
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pb-20 md:pb-24">
           <div className="max-w-3xl">
             <h1 className="hero-text text-white leading-tight mb-6">
-              <span className="block font-serif italic text-6xl md:text-8xl text-[var(--color-champagne)] font-semibold mt-2">
-                Prestige Vehicles.
+              <span className="block font-serif italic text-5xl md:text-8xl text-[var(--color-champagne)] font-semibold mt-2">
+                Home of Luxury Cars.
               </span>
             </h1>
             <p className="hero-text text-[var(--color-base)]/80 text-base md:text-xl font-medium max-w-lg mb-8 md:mb-10 leading-relaxed">
